@@ -4431,7 +4431,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Sliden v1.1.1
+  m_Text: Sliden
 --- !u!1 &5976030139351039353
 GameObject:
   m_ObjectHideFlags: 0
