@@ -24,11 +24,13 @@ public class Sliden : UdonSharpBehaviour
     public GameObject[] Screens;
     public RenderTexture RenderTexture;
     public float WaitForFirstLoad = 0;
+    public GameObject AccessDeniedPanel;
 
     private uint _maxPage = 0;
     private string _message = "Sliden";
     private float _guardLoadTime = float.PositiveInfinity;
     private bool _needRefreshUI = false;
+    private VideoError _videError = VideoError.Unknown;
 
     private VRCUrl[] _channelUrls = Enumerable.Range(0, 10000).Select((i) => new VRCUrl(string.Format("https://vrc-campus.com/video/new_{0}.mp4", i))).ToArray();
 
@@ -127,9 +129,8 @@ public class Sliden : UdonSharpBehaviour
     public override void OnVideoError(VideoError videoError)
     {
         _message = videoError.ToString();
-
         _guardLoadTime = Time.realtimeSinceStartup + 5;
-
+        _videError = videoError;
         _needRefreshUI = true;
     }
 
@@ -180,6 +181,8 @@ public class Sliden : UdonSharpBehaviour
         {
             DebugText.text = VideoPlayer.GetTime() + "/" + VideoPlayer.GetDuration();
         }
+
+        AccessDeniedPanel.SetActive(_videError == VideoError.AccessDenied);
     }
 
     public void Update()
@@ -197,6 +200,7 @@ public class Sliden : UdonSharpBehaviour
             _message = "Loading...";
             _guardLoadTime = float.PositiveInfinity;
             _channel = _nextChannel;
+            _videError = VideoError.Unknown;
 
             VideoPlayer.Stop();
             RenderTexture.Release();
@@ -227,9 +231,7 @@ public class Sliden : UdonSharpBehaviour
     public void ReloadLocal()
     {
         _message = "Loading...";
-
         _channel = 0xFFFF; // Reload on update
-
         _needRefreshUI = true;
     }
 
