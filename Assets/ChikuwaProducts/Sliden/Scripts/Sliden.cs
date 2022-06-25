@@ -24,7 +24,9 @@ public class Sliden : UdonSharpBehaviour
     public GameObject[] Screens;
     public RenderTexture RenderTexture;
     public float WaitForFirstLoad = 0;
-    public GameObject AccessDeniedPanel;
+    public GameObject ErrorAccessDenied;
+    public GameObject ErrorURLPlayer;
+    public GameObject ErrorRateLimit;
 
     private uint _maxPage = 0;
     private string _message = "Sliden";
@@ -182,7 +184,9 @@ public class Sliden : UdonSharpBehaviour
             DebugText.text = VideoPlayer.GetTime() + "/" + VideoPlayer.GetDuration();
         }
 
-        AccessDeniedPanel.SetActive(_videError == VideoError.AccessDenied);
+        ErrorAccessDenied.SetActive(_videError == VideoError.AccessDenied);
+        ErrorURLPlayer.SetActive(_videError == VideoError.InvalidURL || _videError == VideoError.PlayerError);
+        ErrorRateLimit.SetActive(_videError == VideoError.RateLimited);
     }
 
     public void Update()
