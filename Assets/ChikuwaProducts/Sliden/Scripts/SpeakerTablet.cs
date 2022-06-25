@@ -39,30 +39,42 @@ public class SpeakerTablet : UdonSharpBehaviour
             _tabletPickup.Drop();
             SpeakerLockToggleButton.SendCustomEvent(value ? "SetOn" : "SetOff");
 
-            RefreshInteractable();
+            RefreshUI();
         }
     }
 
     private VRC_Pickup _tabletPickup;
     private Collider _placeholderCollider;
     private AudioSource _chime;
-    private bool _placeholderContacts;
-    private bool _placeholderClosing;
-    private bool _tabletClosing;
+    private GameObject _canvas;
+    private bool _lastPlaceholderContacts;
+    private bool _lastPlaceholderClosing;
+    private bool _lastTabletClosing;
+    private bool _lastTabletFacing;
+    private bool _lastOwned;
+
+    private bool PlaceholderContacts { set { _needRefreshUI |= _lastPlaceholderContacts != value; _lastPlaceholderContacts = value; } }
+    private bool PlaceholderClosing { set { _needRefreshUI |= _lastPlaceholderClosing != value; _lastPlaceholderClosing = value; } }
+    private bool TabletClosing { set { _needRefreshUI |= _lastTabletClosing != value; _lastTabletClosing = value; } }
+    private bool TabletFacing { set { _needRefreshUI |= _lastTabletFacing != value; _lastTabletFacing = value; } }
+    private bool Owned { set { _lastOwned |= _lastOwned != value; _lastOwned = value; } }
+
+    private bool _needRefreshUI = true;
 
     private void Start()
     {
         _tabletPickup = (VRC_Pickup)GetComponent(typeof(VRC_Pickup));
         _placeholderCollider = (Collider)Placeholder.gameObject.GetComponent(typeof(Collider));
         _chime = (AudioSource)GetComponent(typeof(AudioSource));
+        _canvas = GetComponentsInChildren(typeof(Canvas))[0].gameObject;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other == _placeholderCollider)
         {
-            _placeholderContacts = true;
-            RefreshInteractable();
+            PlaceholderContacts = true;
+            RefreshUI();
         }
     }
 
@@ -70,8 +82,8 @@ public class SpeakerTablet : UdonSharpBehaviour
     {
         if (other == _placeholderCollider)
         {
-            _placeholderContacts = false;
-            RefreshInteractable();
+            PlaceholderContacts = false;
+            RefreshUI();
         }
     }
 
@@ -120,18 +132,27 @@ public class SpeakerTablet : UdonSharpBehaviour
         VRCPlayerApi player = Networking.LocalPlayer;
         if (player == null)
         {
-            _placeholderClosing = true;
-            _tabletClosing = true;
+            PlaceholderClosing = true;
+            TabletClosing = true;
 
-            RefreshInteractable();
+            if (_needRefreshUI)
+            {
+                RefreshUI();
+            }
             return;
         }
 
-        Vector3 placeholderPosition = Placeholder.gameObject.transform.position;
-        Vector3 tabletPosition = gameObject.transform.position;
+        var placeholderPosition = Placeholder.gameObject.transform.position;
+        var tabletPosition = gameObject.transform.position;
+        var tabletForward = gameObject.transform.forward;
 
-        Vector3 playerLeftHandPosition = player.GetBonePosition(HumanBodyBones.LeftHand);
-        Vector3 playerRightHandPosition = player.GetBonePosition(HumanBodyBones.RightHand);
+        var playerLeftHandPosition = player.GetTrackingData(VRCPlayerApi.TrackingDataType.LeftHand).position;
+        var playerRightHandPosition = player.GetTrackingData(VRCPlayerApi.TrackingDataType.RightHand).position;
+        var playerHeadPosition = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
+
+        var targetDirection = playerHeadPosition - tabletPosition;
+        TabletFacing = Vector3.Dot(tabletForward, targetDirection.normalized) > 0;
+        Owned = Networking.IsOwner(gameObject);
 
         if (playerLeftHandPosition == Vector3.zero || !player.IsUserInVR())
         {
@@ -141,10 +162,13 @@ public class SpeakerTablet : UdonSharpBehaviour
             bodyPosition.y = tabletPosition.y;
             float tabletBodyDistance = (bodyPosition - tabletPosition).magnitude;
 
-            _placeholderClosing = placeholderBodyDistance < _bodyIntaractableDistance;
-            _tabletClosing = tabletBodyDistance < _bodyIntaractableDistance;
+            PlaceholderClosing = placeholderBodyDistance < _bodyIntaractableDistance;
+            TabletClosing = tabletBodyDistance < _bodyIntaractableDistance;
 
-            RefreshInteractable();
+            if (_needRefreshUI)
+            {
+                RefreshUI();
+            }
             return;
         }
 
@@ -157,10 +181,13 @@ public class SpeakerTablet : UdonSharpBehaviour
             (playerRightHandPosition - tabletPosition).magnitude
         );
 
-        _placeholderClosing = placeholderDistance < _handIntaractableDistance;
-        _tabletClosing = tabletDistance < _handIntaractableDistance;
+        PlaceholderClosing = placeholderDistance < _handIntaractableDistance;
+        TabletClosing = tabletDistance < _handIntaractableDistance;
 
-        RefreshInteractable();
+        if (_needRefreshUI)
+        {
+            RefreshUI();
+        }
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player)
@@ -172,9 +199,10 @@ public class SpeakerTablet : UdonSharpBehaviour
         RequestSerialization();
     }
 
-    private void RefreshInteractable()
+    private void RefreshUI()
     {
-        Placeholder.DisableInteractive = _placeholderContacts || !_placeholderClosing;
-        _tabletPickup.pickupable = !_lock && _tabletClosing;
+        Placeholder.DisableInteractive = _lastPlaceholderContacts || !_lastPlaceholderClosing;
+        _tabletPickup.pickupable = (_lastTabletFacing || _lastOwned) && !_lock && _lastTabletClosing;
+        _canvas.SetActive(_lastTabletFacing);
     }
 }
