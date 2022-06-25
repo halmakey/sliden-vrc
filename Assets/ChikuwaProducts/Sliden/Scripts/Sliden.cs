@@ -24,9 +24,10 @@ public class Sliden : UdonSharpBehaviour
     public GameObject[] Screens;
     public RenderTexture RenderTexture;
     public float WaitForFirstLoad = 0;
-    public GameObject ErrorAccessDenied;
-    public GameObject ErrorURLPlayer;
-    public GameObject ErrorRateLimit;
+
+    private GameObject _errorAccessDenied;
+    private GameObject _errorURLPlayer;
+    private GameObject _errorRateLimit;
 
     private uint _maxPage = 0;
     private string _message = "Sliden";
@@ -73,6 +74,10 @@ public class Sliden : UdonSharpBehaviour
 
     void Start()
     {
+        _errorAccessDenied = transform.Find("MainPanel/Image/Error/AccessDenied").gameObject;
+        _errorURLPlayer = transform.Find("MainPanel/Image/Error/URLPlayer").gameObject;
+        _errorRateLimit = transform.Find("MainPanel/Image/Error/RateLimit").gameObject;
+
         VideoPlayer.EnableAutomaticResync = false;
         VideoPlayer.Loop = false;
 
@@ -184,9 +189,9 @@ public class Sliden : UdonSharpBehaviour
             DebugText.text = VideoPlayer.GetTime() + "/" + VideoPlayer.GetDuration();
         }
 
-        ErrorAccessDenied.SetActive(_videError == VideoError.AccessDenied);
-        ErrorURLPlayer.SetActive(_videError == VideoError.InvalidURL || _videError == VideoError.PlayerError);
-        ErrorRateLimit.SetActive(_videError == VideoError.RateLimited);
+        _errorAccessDenied.SetActive(_videError == VideoError.AccessDenied);
+        _errorURLPlayer.SetActive(_videError == VideoError.InvalidURL || _videError == VideoError.PlayerError);
+        _errorRateLimit.SetActive(_videError == VideoError.RateLimited);
     }
 
     public void Update()
