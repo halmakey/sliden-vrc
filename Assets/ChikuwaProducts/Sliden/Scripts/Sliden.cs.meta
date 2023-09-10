@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 9208778bf08709644aab49585f9dc95e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _udonSharpBackingUdonBehaviour: {instanceID: 0}
+  - DefaultScreen: {fileID: 2800000, guid: 7e796d3a1d07112418a893983785a85f, type: 3}
+  - LoadingScreen: {fileID: 2800000, guid: c4cb763782ee9d945991f6b8f8b713f4, type: 3}
+  - AccessDeniedErrorScreen: {fileID: 2800000, guid: 05ab43cd17a897b44bed8b42494ae944,
+      type: 3}
+  - RateLimitErrorScreen: {fileID: 2800000, guid: c89d3841fc073fe4191666bb98c753c2,
+      type: 3}
+  - URLPlayerErrorScreen: {fileID: 2800000, guid: 3d0a7c5be050a104cb1c4fab339fff98,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
