@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: Tablet
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: d3f19005a86fd9b4aaa660547281cdd9,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 72d81fcd70a4563458d2cd7811094dd7,
     type: 2}
   udonAssembly: 
   assemblyError: 
