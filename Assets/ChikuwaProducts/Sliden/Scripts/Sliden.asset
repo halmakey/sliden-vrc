@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: Sliden
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 8ace3c0965c037645a8db374731c8de6,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 57184a821432e324586cb66e6eaebad8,
     type: 2}
   udonAssembly: 
   assemblyError: 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: SpeakerTablet
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 17b431429e576f946a0ca9380cd174e1,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 9fb502b2705258046866af55965dce4c,
     type: 2}
   udonAssembly: 
   assemblyError: 
