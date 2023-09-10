@@ -76,9 +76,11 @@ Assets/[Uu]don/
 Assets/VRCSDK/
 Assets/VRChat Examples
 Assets/VRChat Examples.meta
-Assets/UdonSharp/Scripts/Editor/
+Assets/UdonSharp/
+Assets/UdonSharp 1/
 Assets/VRCSDK.meta
-Assets/UdonSharp/Scripts/Editor.meta
 Assets/Udon.meta
+Assets/UdonSharp.meta
+Assets/UdonSharp 1.meta
 [Aa]ssets/SerializedUdonPrograms*
 Packages/
