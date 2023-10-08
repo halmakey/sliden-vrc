@@ -4,21 +4,39 @@ namespace Chikuwa.Sliden
 {
     public class ArrayUtils
     {
-        public static object[] Append(object[] values, object value)
+        public static T[] Append<T>(T[] values, T value)
         {
             if (value == null) {
                 return values;
             }
-            object[] copy = new object[values.Length + 1];
+            T[] copy = new T[values.Length + 1];
             Array.Copy(values, copy, values.Length);
             copy[values.Length] = value;
             return copy;
         }
 
-        public static object[] FilterNonNull(object[] values)
+        public static T[] Remove<T>(T[] values, T value)
+        {
+            var c = 0;
+            T[] copy = new T[values.Length];
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (Equals(values[i], value))
+                {
+                    continue;
+                }
+                copy[c] = values[i];
+                c++;
+            }
+            T[] result = new T[c];
+            Array.Copy(copy, result, c);
+            return result;
+        }
+
+        public static T[] FilterNonNull<T>(T[] values)
         {
             int size = 0;
-            object[] copy = new object[values.Length];
+            T[] copy = new T[values.Length];
             foreach (var value in values)
             {
                 if (value == null)
@@ -28,7 +46,7 @@ namespace Chikuwa.Sliden
                 copy[size] = value;
                 size++;
             }
-            object[] result = new object[size];
+            T[] result = new T[size];
             Array.Copy(copy, result, size);
             return result;
         }

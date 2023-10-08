@@ -1,16 +1,14 @@
 ﻿
-using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDKBase;
 using VRC.Udon;
-using VRC.SDK3.Video.Components.AVPro;
 using System;
 
 namespace Chikuwa.Sliden
 {
 
-    public class Tablet : UdonSharpBehaviour
+    public class Tablet : SlidenListener
     {
         public readonly float HandIntaractableDistance = 0.05f;
         public readonly float BodyIntaractableDistance = 0.6f;
@@ -59,7 +57,7 @@ namespace Chikuwa.Sliden
 
             if (Sliden != null)
             {
-                Sliden.RegisterTablet(this);
+                Sliden.AddListener(this);
             }
 
             _needUpdate = true;
@@ -217,27 +215,27 @@ namespace Chikuwa.Sliden
             placeholder.UpdateIfNeeded();
         }
 
-        internal virtual void OnSlidenLoad(VRCUrl url)
+        public override void OnSlidenLoad(VRCUrl url)
         {
             _reloadButton.interactable = false;
         }
 
-        internal virtual void OnSlidenReady(VRCUrl url, uint maxPage, uint page)
+        public override void OnSlidenReady(VRCUrl url, uint maxPage, uint page)
         {
             /* NOP */
         }
 
-        internal virtual void OnSlidenError(SlidenError error)
+        public override void OnSlidenError(SlidenError error)
         {
             /* NOP */
         }
 
-        internal virtual void OnSlidenNavigatePage(uint page)
+        public override void OnSlidenNavigatePage(uint page)
         {
             /* NOP */
         }
 
-        internal virtual void OnSlidenCanLoad()
+        public override void OnSlidenCanLoad()
         {
             _reloadButton.interactable = true;
         }

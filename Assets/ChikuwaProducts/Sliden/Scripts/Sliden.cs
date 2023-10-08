@@ -9,7 +9,6 @@ using System;
 
 namespace Chikuwa.Sliden
 {
-
     public enum SlidenState
     {
         Initial,
@@ -52,9 +51,8 @@ namespace Chikuwa.Sliden
 
         private GameObject[] _hidables = Array.Empty<GameObject>();
         private Material[] _screens = Array.Empty<Material>();
-        private SpeakerTablet _speaker;
-        private Tablet[] _tablets = Array.Empty<Tablet>();
         private Button[] _reloadButtons = Array.Empty<Button>();
+        private SlidenListener[] _listeners = Array.Empty<SlidenListener>();
 
         [UdonSynced]
         private uint _nextPage;
@@ -303,7 +301,7 @@ namespace Chikuwa.Sliden
 
         public void Load(VRCUrl url)
         {
-            if (url == null || VRCUrl.Equals(url, VRCUrl.Empty))
+            if (url == null || Equals(url, VRCUrl.Empty))
             {
                 return;
             }
@@ -355,14 +353,14 @@ namespace Chikuwa.Sliden
 
         internal void AddHidable(GameObject hidable)
         {
-            _hidables = (GameObject[])ArrayUtils.Append(_hidables, hidable);
+            _hidables = ArrayUtils.Append(_hidables, hidable);
             _needRefreshUI = true;
         }
 
         internal void AddScreen(GameObject screen)
         {
             var renderer = (Renderer)screen.GetComponent(typeof(Renderer));
-            _screens = (Material[])ArrayUtils.Append(_screens, renderer.material);
+            _screens = ArrayUtils.Append(_screens, renderer.material);
             _needRefreshUI = true;
         }
 
@@ -374,23 +372,20 @@ namespace Chikuwa.Sliden
             }
         }
 
-        internal void RegisterTablet(Tablet tablet)
+        internal void AddListener(SlidenListener listener)
         {
-            _tablets = (Tablet[])ArrayUtils.Append(_tablets, tablet);
+            _listeners = ArrayUtils.Append(_listeners, listener);
         }
 
-        internal void RegisterTablet(SpeakerTablet tablet)
+        internal void RemoveListener(SlidenListener listener)
         {
-            _speaker = tablet;
+            _listeners = ArrayUtils.Remove(_listeners, listener);
         }
 
         private void OnSlidenLoad(VRCUrl url) {
-            foreach (var tablet in _tablets)
+            foreach (var listener in _listeners)
             {
-                tablet.OnSlidenLoad(url);
-            }
-            if (_speaker != null) {
-                _speaker.OnSlidenLoad(url);
+                listener.OnSlidenLoad(url);
             }
             foreach (var button in _reloadButtons)
             {
@@ -400,22 +395,16 @@ namespace Chikuwa.Sliden
 
         private void OnSlidenReady(VRCUrl url, uint maxPage, uint page)
         {
-            foreach (var tablet in _tablets)
+            foreach (var listener in _listeners)
             {
-                tablet.OnSlidenReady(url, maxPage, page);
-            }
-            if (_speaker != null) {
-                _speaker.OnSlidenReady(url, maxPage, page);
+                listener.OnSlidenReady(url, maxPage, page);
             }
         }
 
         private void OnSlidenError(SlidenError error) {
-            foreach (var tablet in _tablets)
+            foreach (var listener in _listeners)
             {
-                tablet.OnSlidenError(error);
-            }
-            if (_speaker != null) {
-                _speaker.OnSlidenError(error);
+                listener.OnSlidenError(error);
             }
             foreach (var button in _reloadButtons)
             {
@@ -425,23 +414,17 @@ namespace Chikuwa.Sliden
 
         private void OnSlidenNavigatePage(uint page)
         {
-            foreach (var tablet in _tablets)
+            foreach (var listener in _listeners)
             {
-                tablet.OnSlidenNavigatePage(page);
-            }
-            if (_speaker != null) {
-                _speaker.OnSlidenNavigatePage(page);
+                listener.OnSlidenNavigatePage(page);
             }
         }
 
         private void OnSlidenCanLoad()
         {
-            foreach (var tablet in _tablets)
+            foreach (var listener in _listeners)
             {
-                tablet.OnSlidenCanLoad();
-            }
-            if (_speaker != null) {
-                _speaker.OnSlidenCanLoad();
+                listener.OnSlidenCanLoad();
             }
             foreach (var button in _reloadButtons)
             {

@@ -203,7 +203,7 @@ namespace Chikuwa.Sliden
             }
         }
 
-        internal override void OnSlidenLoad(VRCUrl url)
+        public override void OnSlidenLoad(VRCUrl url)
         {
             base.OnSlidenLoad(url);
             _resetButton.interactable = false;
@@ -229,7 +229,7 @@ namespace Chikuwa.Sliden
             }
         }
 
-        internal override void OnSlidenReady(VRCUrl url, uint maxPage, uint page)
+        public override void OnSlidenReady(VRCUrl url, uint maxPage, uint page)
         {
             base.OnSlidenReady(url, maxPage, page);
             _pageText.enabled = !VRCUrl.Empty.Equals(url);
@@ -259,7 +259,7 @@ namespace Chikuwa.Sliden
             }
         }
 
-        internal override void OnSlidenError(SlidenError error)
+        public override void OnSlidenError(SlidenError error)
         {
             base.OnSlidenError(error);
             _messageText.enabled = true;
@@ -267,7 +267,7 @@ namespace Chikuwa.Sliden
             _pageText.enabled = false;
         }
 
-        internal override void OnSlidenNavigatePage(uint page)
+        public override void OnSlidenNavigatePage(uint page)
         {
             base.OnSlidenNavigatePage(page);
             _pageText.text = GetPageText(Sliden.MaxPage, page);
@@ -282,7 +282,7 @@ namespace Chikuwa.Sliden
             }
         }
 
-        internal override void OnSlidenCanLoad()
+        public override void OnSlidenCanLoad()
         {
             base.OnSlidenCanLoad();
             _resetButton.interactable = true;
