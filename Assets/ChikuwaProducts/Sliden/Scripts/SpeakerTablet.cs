@@ -37,12 +37,6 @@ namespace Chikuwa.Sliden
             }
         }
 
-        [UdonSynced]
-        private bool _nextLock;
-
-        [UdonSynced]
-        private bool _nextScreenOn;
-
         private AudioSource _chime;
         private UdonBehaviour _hideButton;
         private VRCUrlInputField _urlInputField;
@@ -53,7 +47,6 @@ namespace Chikuwa.Sliden
         private Button[] _nextButtons = Array.Empty<Button>();
         private Button[] _prevButtons = Array.Empty<Button>();
 
-        private bool _screenOn;
         private bool _initialized;
 
         private bool CanNext { get { return Sliden != null && Sliden.Page < Sliden.MaxPage; } }
@@ -74,35 +67,21 @@ namespace Chikuwa.Sliden
 
             _pageText = (Text)transform.Find("Canvas/SpeakerControl/SpeakerPage").GetComponent(typeof(Text));
             _messageText = (Text)transform.Find("Canvas/SpeakerControl/SpeakerMessage").GetComponent(typeof(Text));
-            
-            _nextButtons = (Button[])ArrayUtils.Append(_nextButtons, (Button)transform.Find("Canvas/Next").GetComponent(typeof(Button)));
-            _nextButtons = (Button[])ArrayUtils.Append(_nextButtons, (Button)transform.Find("Canvas/SpeakerControl/Next").GetComponent(typeof(Button)));
 
-            _prevButtons = (Button[])ArrayUtils.Append(_prevButtons, (Button)transform.Find("Canvas/Prev").GetComponent(typeof(Button)));
-            _prevButtons = (Button[])ArrayUtils.Append(_prevButtons, (Button)transform.Find("Canvas/SpeakerControl/Prev").GetComponent(typeof(Button)));
+            _nextButtons = ArrayUtils.Append(_nextButtons, (Button)transform.Find("Canvas/Next").GetComponent(typeof(Button)));
+            _nextButtons = ArrayUtils.Append(_nextButtons, (Button)transform.Find("Canvas/SpeakerControl/Next").GetComponent(typeof(Button)));
 
-            _screenOn = true;
+            _prevButtons = ArrayUtils.Append(_prevButtons, (Button)transform.Find("Canvas/Prev").GetComponent(typeof(Button)));
+            _prevButtons = ArrayUtils.Append(_prevButtons, (Button)transform.Find("Canvas/SpeakerControl/Prev").GetComponent(typeof(Button)));
+
             Lock = false;
 
-            SendCustomNetworkEvent(
-                VRC.Udon.Common.Interfaces.NetworkEventTarget.All,
-                nameof(InitializeSyncTablet)
-            );
+            InitializeSyncTablet();
         }
 
         public void ToggleHide()
         {
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            _nextScreenOn = !_screenOn;
-            RequestSerialization();
-        }
-
-        public override void ToggleLock()
-        {
-            base.ToggleLock();
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            _nextLock = !_nextLock;
-            RequestSerialization();
+            Sliden.SetScreenHidden(!Sliden.ScreenHidden);
         }
 
         public override void ResetPosition(Transform target)
@@ -142,24 +121,6 @@ namespace Chikuwa.Sliden
             }
 
             base.Update();
-
-            if (_nextScreenOn != _screenOn)
-            {
-                _screenOn = _nextScreenOn;
-                Sliden.SetHideAllHidables(!_screenOn);
-                _hideButton.SendCustomEvent(_screenOn ? "SetOn" : "SetOff");
-
-                if (Sliden != null)
-                {
-                    Sliden.RefreshUI();
-                }
-            }
-
-            if (_nextLock != Lock)
-            {
-                Pickup.Drop();
-                Lock = _nextLock;
-            }
         }
 
         public override void OnPlayerJoined(VRCPlayerApi player)
@@ -173,13 +134,7 @@ namespace Chikuwa.Sliden
 
         public void InitializeSyncTablet()
         {
-            if (Networking.IsOwner(gameObject))
-            {
-                _nextLock = Lock;
-                _nextScreenOn = _screenOn;
-                RequestSerialization();
-            }
-
+            _hideButton.SendCustomEvent(Sliden.ScreenHidden ? "SetOff" : "SetOn");
             _initialized = true;
         }
 
@@ -236,8 +191,7 @@ namespace Chikuwa.Sliden
             _pageText.text = GetPageText(maxPage, page);
             _messageText.enabled = false;
 
-            var hasPages = maxPage > 0;
-            var showUrl = !VRCUrl.Empty.Equals(url) && VRCUrl.Equals(url, _urlInputField.GetUrl());
+            var showUrl = !VRCUrl.Empty.Equals(url) && Equals(url, _urlInputField.GetUrl());
             _urlInputField.SetUrl(VRCUrl.Empty);
             var color = _urlInputField.placeholder.color;
             color.a = showUrl ? 0 : 0.5f;
@@ -286,6 +240,22 @@ namespace Chikuwa.Sliden
         {
             base.OnSlidenCanLoad();
             _resetButton.interactable = true;
+        }
+
+        public override void OnSlidenScreenHiddenChanged(bool hidden)
+        {
+            _hideButton.SendCustomEvent(Sliden.ScreenHidden ? "SetOff" : "SetOn");
+        }
+
+        public void Unlock()
+        {           
+            Lock = false;
+        }
+
+        public override void OnPickup()
+        {
+            base.OnPickup();
+            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, nameof(Unlock));
         }
     }
 }

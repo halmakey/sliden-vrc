@@ -1,5 +1,4 @@
 ﻿
-using Chikuwa.Sliden;
 using UdonSharp;
 using VRC.SDKBase;
 
@@ -29,6 +28,11 @@ namespace Chikuwa.Sliden
         }
 
         public virtual void OnSlidenCanLoad()
+        {
+            /* NOP */
+        }
+
+        public virtual void OnSlidenScreenHiddenChanged(bool hidden)
         {
             /* NOP */
         }

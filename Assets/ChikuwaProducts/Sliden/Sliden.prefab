@@ -838,7 +838,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -1020,7 +1020,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -1181,14 +1181,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
-    SerializedBytes: 1f010b000000460061007200440069007300740061006e00630065009a99193f1f010c0000004e00650061007200440069007300740061006e0063006500cdcc4c3e
+    SerializedFormat: 2
+    SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: FarDistance
+      Entry: 4
+      Data: 0.6
+    - Name: NearDistance
+      Entry: 4
+      Data: 0.2
   _udonSharpBackingUdonBehaviour: {fileID: 244927836268805588}
   Tablet: {fileID: 8832289911068465733}
 --- !u!114 &244927836268805588
@@ -1349,7 +1355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -1398,7 +1404,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -1624,7 +1630,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -2008,7 +2014,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -2091,14 +2097,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
-    SerializedBytes: 1f010b000000460061007200440069007300740061006e00630065009a99193f1f010c0000004e00650061007200440069007300740061006e0063006500cdcc4c3e
+    SerializedFormat: 2
+    SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: FarDistance
+      Entry: 4
+      Data: 0.6
+    - Name: NearDistance
+      Entry: 4
+      Data: 0.2
   _udonSharpBackingUdonBehaviour: {fileID: 3497279721119729525}
   Tablet: {fileID: 48164733858730775}
 --- !u!114 &3497279721119729525
@@ -2190,14 +2202,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
-    SerializedBytes: 1f0118000000480061006e00640049006e00740061007200610063007400610062006c006500440069007300740061006e00630065009a99993e1f011800000042006f006400790049006e00740061007200610063007400610062006c006500440069007300740061006e00630065009a99193f
+    SerializedFormat: 2
+    SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: HandIntaractableDistance
+      Entry: 4
+      Data: 0.3
+    - Name: BodyIntaractableDistance
+      Entry: 4
+      Data: 0.6
   _udonSharpBackingUdonBehaviour: {fileID: 1054737551761125815}
   Sliden: {fileID: 315739561308084213}
 --- !u!54 &8840661478850588676
@@ -2699,7 +2717,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -2927,14 +2945,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
-    SerializedBytes: 1f0118000000480061006e00640049006e00740061007200610063007400610062006c006500440069007300740061006e00630065009a99993e1f011800000042006f006400790049006e00740061007200610063007400610062006c006500440069007300740061006e00630065009a99193f
+    SerializedFormat: 2
+    SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: HandIntaractableDistance
+      Entry: 4
+      Data: 0.3
+    - Name: BodyIntaractableDistance
+      Entry: 4
+      Data: 0.6
   _udonSharpBackingUdonBehaviour: {fileID: 108004522937560626}
   Sliden: {fileID: 315739561308084213}
 --- !u!82 &3985605725756486966
@@ -4369,7 +4393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -4889,7 +4913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 
@@ -5332,7 +5356,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
-    SerializedFormat: 0
+    SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects: []
     SerializedBytesString: 

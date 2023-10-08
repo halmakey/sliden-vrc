@@ -58,17 +58,28 @@ namespace Chikuwa.Sliden
         private uint _nextPage;
         [UdonSynced]
         private VRCUrl _nextUrl = VRCUrl.Empty;
+        [UdonSynced]
+        private bool _nextScreenHidden;
 
         private VRCUrl _url;
         private float _step;
         private float _overrun;
         private float _pauseTime = float.PositiveInfinity;
+        private bool _screenHidden;
 
         public bool CanNavigatePage
         {
             get
             {
                 return _videoPlayer != null && _videoPlayer.IsReady && State == SlidenState.Ready && _url != null && _url == _nextUrl;
+            }
+        }
+
+        public bool ScreenHidden
+        {
+            get
+            {
+                return _screenHidden;
             }
         }
 
@@ -81,7 +92,7 @@ namespace Chikuwa.Sliden
 
             var reloadButton = (Button)transform.Find("MainPanel/MainInfo/MainReload").GetComponent(typeof(Button));
             reloadButton.interactable = false;
-            _reloadButtons = (Button[])ArrayUtils.Append(_reloadButtons, reloadButton);
+            _reloadButtons = ArrayUtils.Append(_reloadButtons, reloadButton);
 
             _guardLoadTime = Time.realtimeSinceStartup + WaitForFirstLoad;
             _needRefreshUI = true;
@@ -115,7 +126,10 @@ namespace Chikuwa.Sliden
 
         public void SyncState()
         {
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            if (!Networking.IsOwner(gameObject))
+            {
+                Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            }
             RequestSerialization();
         }
 
@@ -171,8 +185,6 @@ namespace Chikuwa.Sliden
         public void RefreshUI()
         {
             _needRefreshUI = false;
-            bool canNavigatePage = CanNavigatePage;
-
             switch (State)
             {
                 case SlidenState.Initial:
@@ -212,14 +224,16 @@ namespace Chikuwa.Sliden
 
         public void Update()
         {
-            if (_videoPlayer == null) {
+            if (_videoPlayer == null)
+            {
                 return;
             }
             var canReload = Time.realtimeSinceStartup > _guardLoadTime;
             if (CanReload != canReload)
             {
                 CanReload = canReload;
-                if (canReload) {
+                if (canReload)
+                {
                     OnSlidenCanLoad();
                 }
                 _needRefreshUI = true;
@@ -292,6 +306,14 @@ namespace Chikuwa.Sliden
                     _videoPlayer.Pause();
                 }
             }
+            if (_screenHidden != _nextScreenHidden)
+            {
+                _screenHidden = _nextScreenHidden;
+                foreach (var hidable in _hidables)
+                {
+                    hidable.SetActive(!_screenHidden);
+                }
+            }
 
             if (_needRefreshUI)
             {
@@ -334,14 +356,6 @@ namespace Chikuwa.Sliden
             RequestSerialization();
         }
 
-        public void SetHideAllHidables(bool hide)
-        {
-            foreach (GameObject hidable in _hidables)
-            {
-                hidable.SetActive(!hide);
-            }
-        }
-
         public void ResetUrl()
         {
             _nextUrl = InitialUrl;
@@ -353,6 +367,7 @@ namespace Chikuwa.Sliden
 
         internal void AddHidable(GameObject hidable)
         {
+            hidable.SetActive(!_screenHidden);
             _hidables = ArrayUtils.Append(_hidables, hidable);
             _needRefreshUI = true;
         }
@@ -382,7 +397,8 @@ namespace Chikuwa.Sliden
             _listeners = ArrayUtils.Remove(_listeners, listener);
         }
 
-        private void OnSlidenLoad(VRCUrl url) {
+        private void OnSlidenLoad(VRCUrl url)
+        {
             foreach (var listener in _listeners)
             {
                 listener.OnSlidenLoad(url);
@@ -401,7 +417,8 @@ namespace Chikuwa.Sliden
             }
         }
 
-        private void OnSlidenError(SlidenError error) {
+        private void OnSlidenError(SlidenError error)
+        {
             foreach (var listener in _listeners)
             {
                 listener.OnSlidenError(error);
@@ -430,6 +447,12 @@ namespace Chikuwa.Sliden
             {
                 button.interactable = true;
             }
+        }
+
+        public void SetScreenHidden(bool screenHidden)
+        {
+            _nextScreenHidden = screenHidden;
+            SyncState();
         }
     }
 }
