@@ -3,7 +3,6 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        [Toggle(APPLY_GAMMA)] _ApplyGamma("Apply Gamma", Float) = 0
     }
     SubShader
     {
@@ -16,7 +15,6 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma multi_compile APPLY_GAMMA_OFF APPLY_GAMMA
 
             #include "UnityCG.cginc"
 
@@ -45,9 +43,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-            #if APPLY_GAMMA
                 col.rgb = pow(col.rgb, 2.2);
-            #endif
                 return col;
             }
             ENDCG
