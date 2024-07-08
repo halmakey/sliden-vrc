@@ -2316,7 +2316,7 @@ MonoBehaviour:
   ThrowVelocityBoostScale: 1
   currentlyHeldBy: {fileID: 0}
   pickupable: 1
-  proximity: 0
+  proximity: 0.1
 --- !u!114 &1054737551761125815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3002,7 +3002,7 @@ MonoBehaviour:
   ThrowVelocityBoostScale: 1
   currentlyHeldBy: {fileID: 0}
   pickupable: 1
-  proximity: 0
+  proximity: 0.1
 --- !u!114 &2614183740971444620
 MonoBehaviour:
   m_ObjectHideFlags: 0
