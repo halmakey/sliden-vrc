@@ -83,6 +83,12 @@ namespace Chikuwa.Sliden
             }
         }
 
+        private float _followupCaptureTime;
+        private float _nextCaptureTime;
+        private RenderTexture _screenTexture;
+        private uint _screenPage;
+        private Material _offscreenMaterial;
+
         void Start()
         {
             _videoPlayer = (VRCAVProVideoPlayer)GetComponent(typeof(VRCAVProVideoPlayer));
@@ -96,6 +102,9 @@ namespace Chikuwa.Sliden
 
             _guardLoadTime = Time.realtimeSinceStartup + WaitForFirstLoad;
             _needRefreshUI = true;
+
+            _screenTexture = new RenderTexture(1980, 1080, 0, RenderTextureFormat.ARGB32);
+            _offscreenMaterial = transform.Find("Offscreen").GetComponent<MeshRenderer>().material;
 
             SendCustomNetworkEvent(
                 VRC.Udon.Common.Interfaces.NetworkEventTarget.All,
@@ -148,6 +157,8 @@ namespace Chikuwa.Sliden
             Error = SlidenError.None;
 
             _videoPlayer.Pause();
+
+            _screenPage = uint.MaxValue;
 
             OnSlidenReady(_url, MaxPage, Page);
             _needRefreshUI = true;
@@ -297,6 +308,23 @@ namespace Chikuwa.Sliden
                     }
                     OnSlidenNavigatePage(targetPage);
                 }
+                else
+                {
+#if !UNITY_ANDROID
+                    if (page != _screenPage)
+                    {
+                        _screenPage = page;
+                        _nextCaptureTime = 0;
+                        _followupCaptureTime = Time.realtimeSinceStartup + 4;
+                    }
+                    else if (Time.realtimeSinceStartup > _nextCaptureTime)
+                    {
+                        var step = Time.realtimeSinceStartup < _followupCaptureTime ? 0.2f : 4f;
+                        _nextCaptureTime = Time.realtimeSinceStartup + step;
+                        SendCustomEventDelayedFrames(nameof(CaptureScreen), 1, VRC.Udon.Common.Enums.EventTiming.LateUpdate);
+                    }
+#endif
+                }
             }
             if (_pauseTime < Time.realtimeSinceStartup)
             {
@@ -379,7 +407,7 @@ namespace Chikuwa.Sliden
             _needRefreshUI = true;
         }
 
-        private void SetScreenTexture(Texture2D texture)
+        private void SetScreenTexture(Texture texture)
         {
             foreach (var screen in _screens)
             {
@@ -453,6 +481,17 @@ namespace Chikuwa.Sliden
         {
             _nextScreenHidden = screenHidden;
             SyncState();
+        }
+
+        public void CaptureScreen()
+        {
+            var texture = (Texture2D)_offscreenMaterial.mainTexture;
+            if (texture == null || texture.width == 0 || texture.height == 0)
+            {
+                return;
+            }
+            VRCGraphics.Blit(texture, _screenTexture);
+            SetScreenTexture(_screenTexture);
         }
     }
 }
