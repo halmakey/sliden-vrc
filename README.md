@@ -62,7 +62,7 @@ mp4ファイルのURLを直接タブレットに入力すると再生されま�
 2. 使いたいシーンにSliden.prefabを追加してください。
 3. Slidenオブジェクト内の「MainPanel」と「SpeakerDock」、「LocalDock」をそれぞれ好きな位置に移動してください
 
-SlidenSampleScnene.unityにて実際にSlidenを配置した例があります。
+SlidenSampleScene.unityにて実際にSlidenを配置した例があります。
 
 ## スクリーン（MainScreen）を追加する
 
@@ -91,7 +91,7 @@ SlidenSampleScnene.unityにて実際にSlidenを配置した例があります�
 1. ワールド上に設置したSlidenプレハブの中で「LocalDock」オブジェクトを選択し、右クリックメニューから「Duplicate」でLocalDockを複製する
 2. 複製された「LocalDock (1)」を好きな位置に移動する
 
-## プレースホルダー（SpeakerDock/Placeholder, LocakDock/Placeholder）
+## プレースホルダー（SpeakerDock/Placeholder, LocalDock/Placeholder）
 
 タブレットの初期位置にはプレースホルダー（Placeholder）が配置されています。
 タブレットが初期位置から離れるとプレースホルダーが表示され、プレースホルダーをUseするとタブレットの位置を初期位置にリセットできます。
