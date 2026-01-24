@@ -135,7 +135,7 @@ PrefabInstance:
     - target: {fileID: 1055321711490392694, guid: 8894fa7e4588a5c4fab98453e558847d,
         type: 3}
       propertyPath: blueprintId
-      value: wrld_92ff4155-5c07-4527-aaaa-bf7e25636499
+      value: wrld_5e652566-8161-47b1-8dad-878841e3979a
       objectReference: {fileID: 0}
     - target: {fileID: 1055321711490392694, guid: 8894fa7e4588a5c4fab98453e558847d,
         type: 3}
@@ -226,7 +226,7 @@ PrefabInstance:
     - target: {fileID: 6759095419728963412, guid: 8894fa7e4588a5c4fab98453e558847d,
         type: 3}
       propertyPath: DynamicMaterials.Array.size
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6759095419728963412, guid: 8894fa7e4588a5c4fab98453e558847d,
         type: 3}
@@ -4272,7 +4272,7 @@ PrefabInstance:
         type: 3}
       propertyPath: DynamicMaterials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: 506771de2b6f16f4494d9cad34491466, type: 2}
+      objectReference: {fileID: 2100000, guid: 4bb3434aa56467642aac85ae6c05f27b, type: 2}
     - target: {fileID: 6759095419728963412, guid: 8894fa7e4588a5c4fab98453e558847d,
         type: 3}
       propertyPath: DynamicMaterials.Array.data[2]
@@ -4281,6 +4281,11 @@ PrefabInstance:
     - target: {fileID: 6759095419728963412, guid: 8894fa7e4588a5c4fab98453e558847d,
         type: 3}
       propertyPath: DynamicMaterials.Array.data[3]
+      value: 
+      objectReference: {fileID: 2100000, guid: 849e6175e56be9c4aaa08b1c77fd78de, type: 2}
+    - target: {fileID: 6759095419728963412, guid: 8894fa7e4588a5c4fab98453e558847d,
+        type: 3}
+      propertyPath: DynamicMaterials.Array.data[4]
       value: 
       objectReference: {fileID: 2100000, guid: 4bb3434aa56467642aac85ae6c05f27b, type: 2}
     - target: {fileID: 6759095419728963412, guid: 8894fa7e4588a5c4fab98453e558847d,
@@ -17980,6 +17985,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 48164733858730775, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
+    - target: {fileID: 95690888892751337, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 239605676247168894, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -18003,6 +18013,11 @@ PrefabInstance:
       propertyPath: _syncMethod
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 836005160997720754, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: videoPlayer
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 895424719610592109, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -18019,6 +18034,21 @@ PrefabInstance:
         type: 3}
       propertyPath: _syncMethod
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2314574805089492146, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: videoPlayer
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531707553106561846, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531707553106561846, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: videoPlayer
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2835477820851829429, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
@@ -18060,6 +18090,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5135815548853319153, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
+    - target: {fileID: 5476694747216961542, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5476694747257876745, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6915633781917914885, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -18115,6 +18155,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Sliden
       objectReference: {fileID: 0}
+    - target: {fileID: 7357721490530733441, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: videoPlayer
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7768461148670933615, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
       propertyPath: _syncMethod
@@ -18126,6 +18171,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8195395968416794693, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
+    - target: {fileID: 8262933187280702579, guid: fabc6e14ff42c57409b85caef5a92869,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8453168641180854765, guid: fabc6e14ff42c57409b85caef5a92869,
         type: 3}
       propertyPath: _syncMethod

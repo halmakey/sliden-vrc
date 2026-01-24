@@ -637,7 +637,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4624693483182395148}
   - component: {fileID: 7787535991152925383}
-  - component: {fileID: 7357721490530733441}
   m_Layer: 0
   m_Name: Offscreen
   m_TagString: Untagged
@@ -680,7 +679,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 506771de2b6f16f4494d9cad34491466, type: 2}
+  - {fileID: 2100000, guid: 4bb3434aa56467642aac85ae6c05f27b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -702,22 +701,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &7357721490530733441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1536780720991214294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1889044836, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  videoPlayer: {fileID: 3396711566282268786}
-  materialIndex: 0
-  textureProperty: _MainTex
-  useSharedMaterial: 0
 --- !u!1 &1801722562434162862
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +820,6 @@ GameObject:
   - component: {fileID: 4828055559445989662}
   - component: {fileID: 253497755865134612}
   - component: {fileID: 8219034690375332705}
-  - component: {fileID: 836005160997720754}
   - component: {fileID: 8845120150880916566}
   - component: {fileID: 4454686257172621267}
   m_Layer: 13
@@ -913,22 +895,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &836005160997720754
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2548795666202976536}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1889044836, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  videoPlayer: {fileID: 3396711566282268786}
-  materialIndex: 0
-  textureProperty: _MainTex
-  useSharedMaterial: 0
 --- !u!114 &8845120150880916566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1364,7 +1330,6 @@ GameObject:
   - component: {fileID: 476451430297021292}
   - component: {fileID: 8423313600615165425}
   - component: {fileID: 6803776760037600275}
-  - component: {fileID: 2314574805089492146}
   - component: {fileID: 4657508389103221747}
   - component: {fileID: 7768461148670933615}
   - component: {fileID: 2835477820851829429}
@@ -1442,22 +1407,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2314574805089492146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3496806150487937889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1889044836, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  videoPlayer: {fileID: 3396711566282268786}
-  materialIndex: 0
-  textureProperty: _MainTex
-  useSharedMaterial: 0
 --- !u!114 &4657508389103221747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1642,7 +1591,6 @@ GameObject:
   - component: {fileID: 6881893397974688814}
   - component: {fileID: 4086945635369147168}
   - component: {fileID: 5066302486367365707}
-  - component: {fileID: 2531707553106561846}
   - component: {fileID: 8195395968416794693}
   - component: {fileID: 4456351315875697096}
   m_Layer: 17
@@ -1717,22 +1665,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2531707553106561846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3655430051916587746}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1889044836, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  videoPlayer: {fileID: 3396711566282268786}
-  materialIndex: 0
-  textureProperty: _MainTex
-  useSharedMaterial: 0
 --- !u!114 &8195395968416794693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5077,9 +5009,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6915633781917914885}
-  - component: {fileID: 3396711566282268786}
   - component: {fileID: 315739561308084213}
   - component: {fileID: 6915633781917914893}
+  - component: {fileID: 4276576603349273225}
   m_Layer: 0
   m_Name: Sliden
   m_TagString: Untagged
@@ -5106,25 +5038,6 @@ Transform:
   - {fileID: 2853635277259664663}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
---- !u!114 &3396711566282268786
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6915633781917914894}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1743794047, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  EnableAutomaticResync: 0
-  videoURL:
-    url: 
-  autoPlay: 0
-  loop: 0
-  maximumResolution: 1080
-  useLowLatency: 0
 --- !u!114 &315739561308084213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5195,6 +5108,30 @@ MonoBehaviour:
   - {fileID: 151012600144284244}
   - {fileID: 941875461402511542}
   publicVariablesSerializationDataFormat: 0
+--- !u!114 &4276576603349273225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6915633781917914894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -560078975, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnableAutomaticResync: 0
+  videoURL:
+    url: 
+  autoPlay: 0
+  loop: 0
+  renderMode: 1
+  targetTexture: {fileID: 0}
+  targetMaterialRenderer: {fileID: 7787535991152925383}
+  targetMaterialProperty: 
+  aspectRatio: 3
+  targetAudioSources: []
+  maximumResolution: 1080
 --- !u!1 &7470305597245040957
 GameObject:
   m_ObjectHideFlags: 0

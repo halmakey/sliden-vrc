@@ -3,13 +3,13 @@ using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDKBase;
-using VRC.SDK3.Video.Components.AVPro;
 using VRC.SDK3.Components.Video;
+using VRC.SDK3.Video.Components;
 using System;
 
 namespace Chikuwa.Sliden
 {
-    public enum SlidenState
+    public enum SlidenStatus
     {
         Initial,
         Ready,
@@ -38,13 +38,20 @@ namespace Chikuwa.Sliden
         public float WaitForFirstLoad = 0;
         public VRCUrl InitialUrl;
 
-        public SlidenState State { get; private set; } = SlidenState.Initial;
+        public SlidenStatus Status { get; private set; } = SlidenStatus.Initial;
         public SlidenError Error { get; private set; } = SlidenError.None;
         public uint Page { get; private set; } = 0;
         public uint MaxPage { get; private set; } = 0;
-        public bool CanReload { get; private set; } = false;
+        public bool CanLoad
+        {
+            get
+            {
+                return _videoPlayer != null && Time.realtimeSinceStartup > _guardLoadTime;
+            }
+        }
+        private bool _lastCanLoad;
 
-        private VRCAVProVideoPlayer _videoPlayer;
+        private VRCUnityVideoPlayer _videoPlayer;
 
         private float _guardLoadTime = float.PositiveInfinity;
         private bool _needRefreshUI = false;
@@ -64,14 +71,17 @@ namespace Chikuwa.Sliden
         private VRCUrl _url;
         private float _step;
         private float _overrun;
+        private uint _lastSeekPage;
         private float _pauseTime = float.PositiveInfinity;
+        private float _postReadyTime = float.PositiveInfinity;
+        private float _followUpSeekTime = float.PositiveInfinity;
         private bool _screenHidden;
 
         public bool CanNavigatePage
         {
             get
             {
-                return _videoPlayer != null && _videoPlayer.IsReady && State == SlidenState.Ready && _url != null && _url == _nextUrl;
+                return _videoPlayer != null && _videoPlayer.IsReady && Status == SlidenStatus.Ready && _url != null && _url == _nextUrl;
             }
         }
 
@@ -83,15 +93,13 @@ namespace Chikuwa.Sliden
             }
         }
 
-        private float _followupCaptureTime;
-        private float _nextCaptureTime;
-        private RenderTexture _screenTexture;
-        private uint _screenPage;
-        private Material _offscreenMaterial;
+        private MeshRenderer _offscreenRenderer;
+
+        private const float TAIL_ADJUSTMENT_TIME = 0f;
 
         void Start()
         {
-            _videoPlayer = (VRCAVProVideoPlayer)GetComponent(typeof(VRCAVProVideoPlayer));
+            _videoPlayer = (VRCUnityVideoPlayer)GetComponent(typeof(VRCUnityVideoPlayer));
 
             _videoPlayer.Loop = false;
             _videoPlayer.EnableAutomaticResync = false;
@@ -103,8 +111,7 @@ namespace Chikuwa.Sliden
             _guardLoadTime = Time.realtimeSinceStartup + WaitForFirstLoad;
             _needRefreshUI = true;
 
-            _screenTexture = new RenderTexture(1980, 1080, 0, RenderTextureFormat.ARGB32);
-            _offscreenMaterial = transform.Find("Offscreen").GetComponent<MeshRenderer>().material;
+            _offscreenRenderer = transform.Find("Offscreen").GetComponent<MeshRenderer>();
 
             SendCustomNetworkEvent(
                 VRC.Udon.Common.Interfaces.NetworkEventTarget.All,
@@ -144,30 +151,16 @@ namespace Chikuwa.Sliden
 
         public override void OnVideoReady()
         {
-            var duration = _videoPlayer.GetDuration();
-            var pageCount = (uint)Mathf.Floor(duration);
-
-            MaxPage = pageCount - 1;
-            Page = 0;
-            _step = duration / pageCount;
-            _overrun = Mathf.Abs(duration - pageCount);
-            _guardLoadTime = Time.realtimeSinceStartup + 5;
-
-            State = SlidenState.Ready;
-            Error = SlidenError.None;
-
-            _videoPlayer.Pause();
-
-            _screenPage = uint.MaxValue;
-
-            OnSlidenReady(_url, MaxPage, Page);
-            _needRefreshUI = true;
+            var now = Time.realtimeSinceStartup;
+            _postReadyTime = now + 0.2f;
+            _guardLoadTime = now + 5;
+            _videoPlayer.Play();
         }
 
         public override void OnVideoError(VideoError videoError)
         {
             _guardLoadTime = Time.realtimeSinceStartup + 0.1f;
-            State = SlidenState.Error;
+            Status = SlidenStatus.Error;
             switch (videoError)
             {
                 case VideoError.AccessDenied:
@@ -196,17 +189,17 @@ namespace Chikuwa.Sliden
         public void RefreshUI()
         {
             _needRefreshUI = false;
-            switch (State)
+            switch (Status)
             {
-                case SlidenState.Initial:
+                case SlidenStatus.Initial:
                     SetScreenTexture(DefaultScreen);
                     break;
-                case SlidenState.Loading:
+                case SlidenStatus.Loading:
                     SetScreenTexture(LoadingScreen);
                     break;
-                case SlidenState.Ready:
+                case SlidenStatus.Ready:
                     break;
-                case SlidenState.Error:
+                case SlidenStatus.Error:
                     switch (Error)
                     {
                         case SlidenError.None:
@@ -239,109 +232,24 @@ namespace Chikuwa.Sliden
             {
                 return;
             }
-            var canReload = Time.realtimeSinceStartup > _guardLoadTime;
-            if (CanReload != canReload)
+
+            var now = Time.realtimeSinceStartup;
+            var canLoad = CanLoad;
+            if (canLoad != _lastCanLoad)
             {
-                CanReload = canReload;
-                if (canReload)
+                _lastCanLoad = canLoad;
+                if (canLoad)
                 {
                     OnSlidenCanLoad();
                 }
                 _needRefreshUI = true;
             }
 
-            if (CanReload && _nextUrl != _url)
-            {
-                if (VRCUrl.Equals(_nextUrl, _url))
-                {
-                    _url = _nextUrl;
-                }
-                else
-                {
-                    if (_videoPlayer.IsPlaying)
-                    {
-                        _pauseTime = float.PositiveInfinity;
-                    }
-                    _videoPlayer.Stop();
-
-                    _url = _nextUrl;
-
-                    OnSlidenLoad(_url);
-                    if (!VRCUrl.Empty.Equals(_url))
-                    {
-                        _guardLoadTime = float.PositiveInfinity;
-                        State = SlidenState.Loading;
-                        Error = SlidenError.None;
-                        _videoPlayer.LoadURL(_url);
-                    }
-                    else
-                    {
-                        _guardLoadTime = Time.realtimeSinceStartup + 5;
-                        State = SlidenState.Initial;
-                        Error = SlidenError.None;
-                        MaxPage = 0;
-                        OnSlidenReady(_url, 0, 0);
-                    }
-
-                    _needRefreshUI = true;
-                }
-            }
-
-            if (_videoPlayer && _videoPlayer.IsReady && _url == _nextUrl)
-            {
-                uint page = (uint)Mathf.Round(Mathf.Max(_videoPlayer.GetTime() - _overrun, 0) / _step);
-                if (page != _nextPage)
-                {
-                    if (_videoPlayer.IsPlaying)
-                    {
-                        _videoPlayer.Pause();
-                        _pauseTime = float.PositiveInfinity;
-                    }
-                    var targetPage = _nextPage;
-                    _videoPlayer.SetTime(_step * targetPage);
-                    Page = _nextPage;
-                    _needRefreshUI = true;
-                    if (targetPage == _nextPage && _overrun > 0 && !_videoPlayer.IsPlaying)
-                    {
-                        _videoPlayer.Play();
-                        _pauseTime = Time.realtimeSinceStartup + _overrun;
-                    }
-                    OnSlidenNavigatePage(targetPage);
-                }
-                else
-                {
-#if !UNITY_ANDROID
-                    if (page != _screenPage)
-                    {
-                        _screenPage = page;
-                        _nextCaptureTime = 0;
-                        _followupCaptureTime = Time.realtimeSinceStartup + 4;
-                    }
-                    else if (Time.realtimeSinceStartup > _nextCaptureTime)
-                    {
-                        var step = Time.realtimeSinceStartup < _followupCaptureTime ? 0.2f : 4f;
-                        _nextCaptureTime = Time.realtimeSinceStartup + step;
-                        SendCustomEventDelayedFrames(nameof(CaptureScreen), 1, VRC.Udon.Common.Enums.EventTiming.LateUpdate);
-                    }
-#endif
-                }
-            }
-            if (_pauseTime < Time.realtimeSinceStartup)
-            {
-                _pauseTime = float.PositiveInfinity;
-                if (_videoPlayer.IsPlaying)
-                {
-                    _videoPlayer.Pause();
-                }
-            }
-            if (_screenHidden != _nextScreenHidden)
-            {
-                _screenHidden = _nextScreenHidden;
-                foreach (var hidable in _hidables)
-                {
-                    hidable.SetActive(!_screenHidden);
-                }
-            }
+            LoadIfNeeded(now);
+            SetReadyIfNeeded(now);
+            SeekIfNeeded(now);
+            PauseIfNeeded(now);
+            ActivateScreenIfNeeded();
 
             if (_needRefreshUI)
             {
@@ -373,7 +281,7 @@ namespace Chikuwa.Sliden
         {
             if (Networking.IsOwner(gameObject))
             {
-                if (State == SlidenState.Initial)
+                if (Status == SlidenStatus.Initial)
                 {
                     _nextUrl = InitialUrl;
                     _nextPage = 0;
@@ -483,15 +391,159 @@ namespace Chikuwa.Sliden
             SyncState();
         }
 
-        public void CaptureScreen()
+        private void SetReadyIfNeeded(float now)
         {
-            var texture = (Texture2D)_offscreenMaterial.mainTexture;
-            if (texture == null || texture.width == 0 || texture.height == 0)
+            if (now < _postReadyTime)
             {
                 return;
             }
-            VRCGraphics.Blit(texture, _screenTexture);
-            SetScreenTexture(_screenTexture);
+            _postReadyTime = float.PositiveInfinity;
+
+            var duration = _videoPlayer.GetDuration();
+            var pageCount = (uint)Mathf.Floor(duration);
+
+            MaxPage = pageCount - 1;
+            _step = duration / pageCount;
+            _overrun = Mathf.Abs(duration - pageCount);
+
+            Status = SlidenStatus.Ready;
+            Error = SlidenError.None;
+            Page = _nextPage;
+
+            var targetTime = _step * _nextPage;
+            var targetOverrun = _overrun;
+            var followUpSeekTime = now + targetOverrun + 0.2f;
+
+            // Adjust target time to avoid landing on the tail end
+            if (targetTime > _step && _nextPage == MaxPage)
+            {
+                targetTime -= _step;
+                followUpSeekTime += _step / 2f;
+            }
+
+            _videoPlayer.Pause();
+            _videoPlayer.SetTime(targetTime);
+            _lastSeekPage = _nextPage;
+            _followUpSeekTime = followUpSeekTime;
+
+            if (_overrun > 0)
+            {
+                _videoPlayer.Play();
+                _pauseTime = now + _overrun;
+            }
+
+            var pb = new MaterialPropertyBlock();
+            _offscreenRenderer.GetPropertyBlock(pb);
+            SetScreenTexture(pb.GetTexture("_MainTex"));
+
+            OnSlidenReady(_url, MaxPage, Page);
+
+            _needRefreshUI = true;
+        }
+
+        private void LoadIfNeeded(float now)
+        {
+            if (_guardLoadTime > now)
+            {
+                return;
+            }
+
+            if (_nextUrl == _url)
+            {
+                return;
+            }
+
+            if (VRCUrl.Equals(_nextUrl, _url))
+            {
+                _url = _nextUrl;
+                return;
+            }
+
+            _videoPlayer.Stop();
+
+            _pauseTime = float.PositiveInfinity;
+            _url = _nextUrl;
+
+            if (!VRCUrl.Empty.Equals(_url))
+            {
+                _guardLoadTime = now + 10;
+                Status = SlidenStatus.Loading;
+                Error = SlidenError.None;
+                _videoPlayer.LoadURL(_url);
+                OnSlidenLoad(_url);
+            }
+            else
+            {
+                _guardLoadTime = now + 5;
+                Status = SlidenStatus.Initial;
+                Error = SlidenError.None;
+                MaxPage = 0;
+                OnSlidenReady(_url, 0, 0);
+            }
+
+            _needRefreshUI = true;
+        }
+
+        private void SeekIfNeeded(float now)
+        {
+            if (Status != SlidenStatus.Ready || !_videoPlayer.IsReady || _url != _nextUrl)
+            {
+                return;
+            }
+
+            uint currentPage = now > _followUpSeekTime ? (uint)Mathf.Round(Mathf.Max(_videoPlayer.GetTime() - _overrun, 0) / _step) : _lastSeekPage;
+
+            if (currentPage != _nextPage)
+            {
+                if (_videoPlayer.IsPlaying)
+                {
+                    _videoPlayer.Pause();
+                    _pauseTime = float.PositiveInfinity;
+                }
+                var targetTime = _step * _nextPage;
+                var targetOverrun = _overrun;
+
+                _videoPlayer.SetTime(targetTime);
+                _followUpSeekTime = now + targetOverrun + 0.2f;
+
+                Page = _nextPage;
+                _lastSeekPage = _nextPage;
+                _needRefreshUI = true;
+
+                if (targetOverrun > 0)
+                {
+                    _videoPlayer.Play();
+                    _pauseTime = Time.realtimeSinceStartup + targetOverrun;
+                }
+                OnSlidenNavigatePage(Page);
+                return;
+            }
+        }
+
+        private void PauseIfNeeded(float now)
+        {
+            if (Status != SlidenStatus.Ready || !_videoPlayer.IsReady || !_videoPlayer.IsPlaying)
+            {
+                return;
+            }
+
+            if (now > _pauseTime)
+            {
+                _pauseTime = float.PositiveInfinity;
+                _videoPlayer.Pause();
+            }
+        }
+
+        private void ActivateScreenIfNeeded()
+        {
+            if (_screenHidden != _nextScreenHidden)
+            {
+                _screenHidden = _nextScreenHidden;
+                foreach (var hidable in _hidables)
+                {
+                    hidable.SetActive(!_screenHidden);
+                }
+            }
         }
     }
 }
