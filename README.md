@@ -66,10 +66,8 @@ SlidenSampleScene.unityにて実際にSlidenを配置した例があります。
 
 1. シーンにアスペクト比 16:9のサイズでQuadを配置する
 2. Quadのマテリアルに「SlidenScreenMaterial.mat」を設定する
-3. Quadにコンポーネント「VRC AVPro Video Screen」を追加する
-4. Quadに「VRC AVPro Video Screen」コンポーネントを追加し、「Video Player」に「Sliden」オブジェクトを指定する
-5. Quadに「Screen (U# Script)」コンポーネントを追加し、「Sliden」に「Sliden」オブジェクトを指定する
-6. Quadに「Hidable (U# Script)」コンポーネントを追加し、「Sliden」に「Sliden」オブジェクトを指定する
+3. Quadに「Screen (U# Script)」コンポーネントを追加し、「Sliden」に「Sliden」オブジェクトを指定する
+4. Quadに「Hidable (U# Script)」コンポーネントを追加し、「Sliden」に「Sliden」オブジェクトを指定する
 
 ## ローカルタブレット（LocalDock）を追加する
 
