@@ -73,8 +73,9 @@ namespace Chikuwa.Sliden
         private float _overrun;
         private uint _lastSeekPage;
         private float _pauseTime = float.PositiveInfinity;
-        private float _postReadyTime = float.PositiveInfinity;
+        private float _postVideoReadyTime = float.PositiveInfinity;
         private float _followUpSeekTime = float.PositiveInfinity;
+        private float _followUpReadyTime = float.PositiveInfinity;
         private bool _screenHidden;
 
         public bool CanNavigatePage
@@ -93,9 +94,10 @@ namespace Chikuwa.Sliden
             }
         }
 
-        private MeshRenderer _offscreenRenderer;
+        private Renderer _offscreenRenderer;
+        private Texture _offscreenTexture;
+        private Texture _screenTexture;
 
-        private const float TAIL_ADJUSTMENT_TIME = 0f;
 
         void Start()
         {
@@ -151,8 +153,12 @@ namespace Chikuwa.Sliden
 
         public override void OnVideoReady()
         {
+            var pb = new MaterialPropertyBlock();
+            _offscreenRenderer.GetPropertyBlock(pb);
+            _offscreenTexture = pb.GetTexture("_MainTex");
+
             var now = Time.realtimeSinceStartup;
-            _postReadyTime = now + 0.2f;
+            _postVideoReadyTime = now + 0.2f;
             _guardLoadTime = now + 5;
             _videoPlayer.Play();
         }
@@ -317,6 +323,7 @@ namespace Chikuwa.Sliden
 
         private void SetScreenTexture(Texture texture)
         {
+            _screenTexture = texture;
             foreach (var screen in _screens)
             {
                 screen.SetTexture("_MainTex", texture);
@@ -393,52 +400,59 @@ namespace Chikuwa.Sliden
 
         private void SetReadyIfNeeded(float now)
         {
-            if (now < _postReadyTime)
+            if (now >= _postVideoReadyTime)
             {
-                return;
+                _postVideoReadyTime = float.PositiveInfinity;
+
+                var duration = _videoPlayer.GetDuration();
+                var pageCount = (uint)Mathf.Round(duration);
+
+                Debug.Log($"Video ready: duration={duration}, pageCount={pageCount}");
+
+                MaxPage = pageCount - 1;
+                _step = duration / pageCount;
+                _overrun = Math.Max(duration - pageCount, 0);
+
+
+                var targetTime = _step * _nextPage;
+                var targetOverrun = _overrun;
+                var followUpSeekTime = now + targetOverrun + 0.2f;
+
+                // Adjust target time to avoid landing on the tail end
+                if (targetTime > _step && _nextPage == MaxPage)
+                {
+                    targetTime -= _step;
+                    targetOverrun += _step;
+                    followUpSeekTime += _step;
+                }
+
+                _videoPlayer.Pause();
+                _videoPlayer.SetTime(targetTime);
+                _lastSeekPage = _nextPage;
+                Page = _nextPage;
+
+                _followUpSeekTime = followUpSeekTime;
+                _followUpReadyTime = followUpSeekTime;
+
+                if (targetOverrun > 0)
+                {
+                    _videoPlayer.Play();
+                    _pauseTime = now + targetOverrun;
+                }
             }
-            _postReadyTime = float.PositiveInfinity;
-
-            var duration = _videoPlayer.GetDuration();
-            var pageCount = (uint)Mathf.Floor(duration);
-
-            MaxPage = pageCount - 1;
-            _step = duration / pageCount;
-            _overrun = Mathf.Abs(duration - pageCount);
-
-            Status = SlidenStatus.Ready;
-            Error = SlidenError.None;
-            Page = _nextPage;
-
-            var targetTime = _step * _nextPage;
-            var targetOverrun = _overrun;
-            var followUpSeekTime = now + targetOverrun + 0.2f;
-
-            // Adjust target time to avoid landing on the tail end
-            if (targetTime > _step && _nextPage == MaxPage)
+            else if (now >= _followUpReadyTime)
             {
-                targetTime -= _step;
-                followUpSeekTime += _step / 2f;
+                _followUpReadyTime = float.PositiveInfinity;
+
+                Status = SlidenStatus.Ready;
+                Error = SlidenError.None;
+
+                SetScreenTexture(_offscreenTexture);
+                _needRefreshUI = true;
+
+                OnSlidenReady(_url, MaxPage, Page);
+                _needRefreshUI = true;
             }
-
-            _videoPlayer.Pause();
-            _videoPlayer.SetTime(targetTime);
-            _lastSeekPage = _nextPage;
-            _followUpSeekTime = followUpSeekTime;
-
-            if (_overrun > 0)
-            {
-                _videoPlayer.Play();
-                _pauseTime = now + _overrun;
-            }
-
-            var pb = new MaterialPropertyBlock();
-            _offscreenRenderer.GetPropertyBlock(pb);
-            SetScreenTexture(pb.GetTexture("_MainTex"));
-
-            OnSlidenReady(_url, MaxPage, Page);
-
-            _needRefreshUI = true;
         }
 
         private void LoadIfNeeded(float now)
@@ -491,15 +505,15 @@ namespace Chikuwa.Sliden
                 return;
             }
 
-            uint currentPage = now > _followUpSeekTime ? (uint)Mathf.Round(Mathf.Max(_videoPlayer.GetTime() - _overrun, 0) / _step) : _lastSeekPage;
-
+            var isFollowUpSeek = now >= _followUpSeekTime;
+            uint currentPage = (isFollowUpSeek && _lastSeekPage != MaxPage) ? GetVideoPage() : _lastSeekPage;
             if (currentPage != _nextPage)
             {
                 if (_videoPlayer.IsPlaying)
                 {
                     _videoPlayer.Pause();
-                    _pauseTime = float.PositiveInfinity;
                 }
+                _pauseTime = float.PositiveInfinity;
                 var targetTime = _step * _nextPage;
                 var targetOverrun = _overrun;
 
@@ -544,6 +558,16 @@ namespace Chikuwa.Sliden
                     hidable.SetActive(!_screenHidden);
                 }
             }
+        }
+
+        private uint GetVideoPage()
+        {
+            if (_videoPlayer == null || !_videoPlayer.IsReady)
+            {
+                return 0;
+            }
+            var time = _videoPlayer.GetTime();
+            return (uint)Mathf.Floor(Mathf.Max(time, 0) / _step);
         }
     }
 }
