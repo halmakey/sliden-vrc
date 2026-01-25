@@ -407,12 +407,9 @@ namespace Chikuwa.Sliden
                 var duration = _videoPlayer.GetDuration();
                 var pageCount = (uint)Mathf.Round(duration);
 
-                Debug.Log($"Video ready: duration={duration}, pageCount={pageCount}");
-
                 MaxPage = pageCount - 1;
                 _step = duration / pageCount;
                 _overrun = Math.Max(duration - pageCount, 0);
-
 
                 var targetTime = _step * _nextPage;
                 var targetOverrun = _overrun;
